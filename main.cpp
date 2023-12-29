@@ -13,8 +13,10 @@
 #include <sstream>
 #include <iomanip>
 
-#include "global.h"
 #include <string>
+
+const int SALT_SIZE = 18;
+
 class UserManager;
 class LoginInfoManager;
 
