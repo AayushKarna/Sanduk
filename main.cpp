@@ -261,7 +261,21 @@ namespace Utility
 
   void exitProgram()
   {
-    std::cout << "Exiting..." << '\n';
+    std::string line1 = "  _______ _                 _     __     __           _ ";
+    std::string line2 = " |__   __| |               | |    \\ \\   / /          | |";
+    std::string line3 = "    | |  | |__   __ _ _ __ | | __  \\ \\_/ /__  _   _  | |";
+    std::string line4 = "    | |  | '_ \\ / _` | '_ \\| |/ /   \\   / _ \\| | | | | |";
+    std::string line5 = "    | |  | | | | (_| | | | |   <     | | (_) | |_| | |_|";
+    std::string line6 = "    |_|  |_| |_|\\__,_|_| |_|_|\\_\\    |_|\\___/ \\__,_| (_)";
+
+    std::cout << '\n';
+    std::cout << line1 << '\n';
+    std::cout << line2 << '\n';
+    std::cout << line3 << '\n';
+    std::cout << line4 << '\n';
+    std::cout << line5 << '\n';
+    std::cout << line6 << '\n';
+    std::cout << '\n';
     exit(0);
   }
 
@@ -660,6 +674,31 @@ public:
 
     throw CustomException("Login info not found.");
   }
+
+  void exportCSV(const std::string &fileName, const std::string &userId)
+  {
+    std::ofstream file(fileName);
+
+    if (!file.is_open())
+    {
+      throw CustomException("Error opening file.");
+    }
+
+    file << "ID,Website,Username,Password\n";
+    for (const auto &loginInfoPtr : this->loginInfos)
+    {
+      const LoginInfo &loginInfo = *loginInfoPtr;
+      if (loginInfo.getUserId() == userId)
+      {
+        std::string decryptedPassword = Utility::decryptPassword(Utility::hexStringToBytes(loginInfo.getPassword()), Utility::deriveKey(currentMasterPassword, loginInfo.getSalt()));
+
+        file << loginInfo.getId() << "," << loginInfo.getWebsite() << "," << loginInfo.getUsername() << ","
+             << decryptedPassword << "\n";
+      }
+    }
+
+    file.close();
+  }
 };
 
 class UserInterface
@@ -752,7 +791,8 @@ class MainMenuInterface : public UserInterface
     printText("6) Update Password");
     printText("7) Delete Login");
     printText("8) Generate Password");
-    printText("9) Exit");
+    printText("9) Export all password (CSV)");
+    printText("10) Exit");
   }
 
   void printBorderedTableAllLoginHeader()
@@ -805,7 +845,7 @@ class MainMenuInterface : public UserInterface
       printText("Enter your choice: ", false);
       std::cin >> this->choice;
 
-      if (std::cin.fail() || choice < 1 || choice > 9)
+      if (std::cin.fail() || choice < 1 || choice > 10)
       {
         Utility::clearInputBuffer();
         printText("Invalid choice. Please try again");
@@ -957,6 +997,18 @@ class MainMenuInterface : public UserInterface
         this->run();
       }
       else if (this->choice == 9)
+      {
+        std::string fileName = currentUserUsername + ".csv ";
+
+        LoginInfoManager loginInfoManager("loginInfos.csv");
+
+        loginInfoManager.exportCSV(fileName, currentUserId);
+
+        std::cout << "\nSuccessfully exported all your passwords to " << fileName << "\n";
+
+        this->run();
+      }
+      else if (this->choice == 10)
       {
         Utility::exitProgram();
       }
