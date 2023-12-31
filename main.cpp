@@ -1099,10 +1099,13 @@ class WelcomeInterface : public UserInterface
 
   void displayHeading()
   {
-    printLine(DEFAULT_LINE_CHAR);
-    printCenteredText("Welcome to Sanduk");
-    printCenteredText("Your Password Manager");
-    printLine(DEFAULT_LINE_CHAR);
+    std::cout << "  _____                 _       _    " << '\n';
+    std::cout << " / ____|               | |     | |   " << '\n';
+    std::cout << "| (___   __ _ _ __   __| |_   _| | __" << '\n';
+    std::cout << " \\___ \\ / _` | '_ \\ / _` | | | | |/ /" << '\n';
+    std::cout << " ____) | (_| | | | | (_| | |_| |   < " << '\n';
+    std::cout << "|_____/ \\__,_|_| |_|\\__,_|\\__,_|_|\\_\\" << '\n';
+    printText("");
   }
 
   void displayMenu()
